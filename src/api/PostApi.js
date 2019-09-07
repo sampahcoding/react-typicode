@@ -53,12 +53,12 @@ export const updatePost = async(id, title, body) => {
   try {
     return await axios({
       method: 'PUT',
-      url: API.POSTS,
+      url: API.POSTS + "/" + id,
       headers: { "Content-type": "application/json; charset=UTF-8" },
       data: JSON.stringify({
         title: title,
         body: body,
-        id: id
+        id: id,
       })
     });
   } catch(err) {

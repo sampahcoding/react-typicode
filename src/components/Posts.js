@@ -1,8 +1,10 @@
-import React, { useEffect, useReducer, useCallback } from "react";
+import React, { useEffect, useReducer, useCallback, useContext, useState } from "react";
 import { getPostByUser } from "../api/PostApi";
 import { initialState, postReducer } from "../reducer/PostReducer";
 import { USERPOSTS } from "../const/ActionType";
 import Loader from "../components/Loader";
+import PostEditModal from "../components/PostEditModal";
+import { PostsContext } from "../context/PostsContext";
 import {
   Row, Col, Card, ListGroup,
   ButtonToolbar, ButtonGroup, Button
@@ -10,18 +12,32 @@ import {
 
 const Posts = ({ id }) => {
   const [data, setData] = useReducer(postReducer, initialState);
+  const [posts, setPosts] = useContext(PostsContext);
+  const [isShown, setIsShown] = useState(false);
+  const [post, setPost] = useState({});
   const getData = useCallback( async() => {
     const res = await getPostByUser(id);
     setData({
       type: res.error ? USERPOSTS.ERROR : USERPOSTS.DONE,
       data: res
     });
-  }, [id]);
+    setPosts(res.posts);
+  }, [id, setPosts]);
 
   useEffect(() => {
     setData({type: USERPOSTS.LOADING});
     setTimeout(getData, 500);
   }, [getData]);
+
+  const remove = useCallback((id) => {
+    const new_posts = posts.filter((p) => p.id !== id);
+    setPosts(new_posts);
+  }, [posts, setPosts]);
+
+  const edit = useCallback((post) => {
+    setIsShown(!isShown);
+    setPost(post);
+  }, [isShown]);
 
   return(
     <>
@@ -34,7 +50,7 @@ const Posts = ({ id }) => {
             </Col>
             <Col>
               <ButtonToolbar style={{ justifyContent: "flex-end" }}>
-                <Button variant="primary" size="sm">Add</Button>
+                <Button variant="primary" size="sm" onClick={()=> edit({})}>Add</Button>
               </ButtonToolbar>
             </Col>
           </Row>
@@ -42,16 +58,16 @@ const Posts = ({ id }) => {
         <ListGroup variant="flush">
           {data.isLoading && <Loader mid/>}
           {
-            data.isDone && data.posts.map((post) => {
+            data.isDone && posts.map((post) => {
               return (
                 <ListGroup.Item key={post.id}>
                   <Card.Link href={"/post/" + post.id}>{post.title}</Card.Link>
                   <ButtonToolbar style={{ justifyContent: "flex-end" }}>
                     <ButtonGroup className="mr-2">
-                      <Button variant="primary" size="sm">Edit</Button>
+                      <Button variant="primary" size="sm" onClick={()=> edit(post)}>Edit</Button>
                     </ButtonGroup>
                     <ButtonGroup>
-                      <Button variant="secondary" size="sm">Delete</Button>
+                      <Button variant="secondary" size="sm" onClick={()=> remove(post.id)}>Delete</Button>
                     </ButtonGroup>
                   </ButtonToolbar>
                 </ListGroup.Item>
@@ -60,6 +76,7 @@ const Posts = ({ id }) => {
           }
         </ListGroup>
       </Card>
+      <PostEditModal isShown={isShown} post={post}/>
     </>
   );
 }

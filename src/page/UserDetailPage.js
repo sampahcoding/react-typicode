@@ -6,6 +6,7 @@ import Loader from "../components/Loader";
 import Posts from "../components/Posts";
 import Albums from "../components/Albums";
 import { Row, Col } from 'react-bootstrap';
+import { PostsProvider } from "../context/PostsContext";
 
 const UserPage = (history) => {
   const { match } = history;
@@ -53,7 +54,11 @@ const UserPage = (history) => {
       }
       <Row>
         <Col md={6}><Albums id={id}/></Col>
-        <Col md={6}>{MemoizedPost}</Col>
+        <Col md={6}>
+          <PostsProvider posts={[]}>
+            {MemoizedPost}
+          </PostsProvider>
+        </Col>
       </Row>
     </>
   );

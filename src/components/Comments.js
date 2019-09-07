@@ -28,11 +28,11 @@ const Comments = ({ id }) => {
       {data.isError && <p>Something wrong....</p>}
       <Card style={{ width: "70%", border: "none"}}>
         <Card.Title>Comments</Card.Title>
+        {data.isLoading && <Loader mid/>}
         {data.isDone && data.comments && (
           <CommentsProvider comments={data.comments}>
             <CommentUpdate id={id}/>
             <ListGroup variant="flush">
-              {data.isLoading && <Loader mid/>}
               <CommentList/>
             </ListGroup>
           </CommentsProvider>
