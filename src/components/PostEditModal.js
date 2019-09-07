@@ -5,13 +5,18 @@ import { addPost, updatePost } from "../api/PostApi";
 
 const PostEditModal = ({ isShown, post }) => {
   const [show, setShow] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const title = useRef();
   const body = useRef();
   const skipInitialRender = useRef(true);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [posts, setPosts] = useContext(PostsContext);
-
+  const inputProps = {
+    disabled: isLoading,
+    as: "textarea",
+    rows: "3"
+  };
   useEffect(() => {
     if (skipInitialRender.current) {
       skipInitialRender.current = false;
@@ -21,6 +26,7 @@ const PostEditModal = ({ isShown, post }) => {
   }, [isShown]);
 
   const add = useCallback( async() => {
+    setIsLoading(true);
     const inputTitle = title.current.value;
     const inputBody = body.current.value;
     if (inputTitle === "" || inputBody === "") return;
@@ -45,6 +51,7 @@ const PostEditModal = ({ isShown, post }) => {
       setPosts(new_posts);
       handleClose();
     }
+    setIsLoading(false);
   }, [posts, post.id, setPosts]);
 
   return(
@@ -54,20 +61,20 @@ const PostEditModal = ({ isShown, post }) => {
           <Modal.Title>{post.id ? "Edit Post" : "Add Post"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form.Group controlId="exampleForm.ControlTextarea1">
+          <Form.Group>
             <Form.Label>Title</Form.Label>
-            <Form.Control as="textarea" rows="3" ref={title} defaultValue={post.title || ""}/>
+            <Form.Control {...inputProps} ref={title} defaultValue={post.title || ""}/>
           </Form.Group>
-          <Form.Group controlId="exampleForm.ControlTextarea1">
+          <Form.Group>
             <Form.Label>Body</Form.Label>
-            <Form.Control as="textarea" rows="3" ref={body} defaultValue={post.body || ""}/>
+            <Form.Control {...inputProps} ref={body} defaultValue={post.body || ""}/>
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button variant="secondary" onClick={handleClose} disabled={isLoading}>
             Close
           </Button>
-          <Button variant="primary" onClick={() => add()}>
+          <Button variant="primary" onClick={() => add()} disabled={isLoading}>
             {post.id ? "Save Changes" : "Add Post"}
           </Button>
         </Modal.Footer>
