@@ -37,15 +37,13 @@ export const addComment = async(postId, name, email, body) => {
   }
 };
 
-export const updateComment = async(id, name, email, body) => {
+export const updateComment = async(id, body) => {
   try {
     return await axios({
       method: 'PUT',
-      url: API.COMMENTS,
+      url: API.COMMENTS + "/" + id,
       headers: { "Content-type": "application/json; charset=UTF-8" },
       data: JSON.stringify({
-        name: name,
-        email: email,
         body: body,
         id: id
       })

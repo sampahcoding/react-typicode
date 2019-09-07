@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useCallback } from "react";
+import React, { useEffect, useReducer, useCallback, useMemo } from "react";
 import { getUser } from "../api/UserApi";
 import { initialState, usersReducer } from "../reducer/UserReducer";
 import { USERDETAIL } from "../const/ActionType";
@@ -25,6 +25,10 @@ const UserPage = (history) => {
     setTimeout(getData, 500);
   }, [getData]);
 
+  const MemoizedPost = useMemo(() => {
+    return(<Posts id={id}/>)
+  }, [id]);
+
   const  user = data.user;
   return(
     <>
@@ -49,7 +53,7 @@ const UserPage = (history) => {
       }
       <Row>
         <Col md={6}><Albums id={id}/></Col>
-        <Col md={6}><Posts id={id}/></Col>
+        <Col md={6}>{MemoizedPost}</Col>
       </Row>
     </>
   );

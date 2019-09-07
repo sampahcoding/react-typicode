@@ -11,9 +11,9 @@ export const initialState = {
 export function commentReducer(state, action) {
   switch (action.type) {
     case COMMENTS.LOADING:
-      return {...state, ...loading};
+      return {...initialState, ...loading};
     case COMMENTS.ERROR:
-      return {...state, ...error};
+      return {...initialState, ...error};
     case COMMENTS.DONE:
       return {...state, ...done, ...action.data};
     default:
