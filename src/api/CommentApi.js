@@ -1,13 +1,13 @@
-import axios from "axios";
-import { API } from "../const/Api";
+import axios from 'axios';
+import API from '../const/Api';
 
-export const getCommentByPost = async(id) => {
+export const getCommentByPost = async (id) => {
   try {
-    const response = await axios(API.COMMENTS + "?postId=" + id);
+    const response = await axios(`${API.COMMENTS}?postId=${id}`);
     return {
       comments: response.data,
     };
-  } catch(err) {
+  } catch (err) {
     return {
       error: true,
       message: err,
@@ -15,21 +15,21 @@ export const getCommentByPost = async(id) => {
   }
 };
 
-export const addComment = async(postId, name, email, body) => {
+export const addComment = async (postId, name, email, body) => {
   try {
-    const res =  await axios({
+    const res = await axios({
       method: 'POST',
       url: API.COMMENTS,
-      headers: { "Content-type": "application/json; charset=UTF-8" },
+      headers: { 'Content-type': 'application/json; charset=UTF-8' },
       data: JSON.stringify({
-        name: name,
-        email: email,
-        body: body,
-        postId: postId
-      })
+        name,
+        email,
+        body,
+        postId,
+      }),
     });
     return res;
-  } catch(err) {
+  } catch (err) {
     return {
       error: true,
       message: err,
@@ -37,18 +37,18 @@ export const addComment = async(postId, name, email, body) => {
   }
 };
 
-export const updateComment = async(id, body) => {
+export const updateComment = async (id, body) => {
   try {
     return await axios({
       method: 'PUT',
-      url: API.COMMENTS + "/" + id,
-      headers: { "Content-type": "application/json; charset=UTF-8" },
+      url: `${API.COMMENTS}/${id}`,
+      headers: { 'Content-type': 'application/json; charset=UTF-8' },
       data: JSON.stringify({
-        body: body,
-        id: id
-      })
+        body,
+        id,
+      }),
     });
-  } catch(err) {
+  } catch (err) {
     return {
       error: true,
       message: err,
@@ -56,13 +56,13 @@ export const updateComment = async(id, body) => {
   }
 };
 
-export const deleteComment = async(id) => {
+export const deleteComment = async (id) => {
   try {
     return await axios({
       method: 'DELETE',
-      url: API.COMMENTS + '/' + id,
+      url: `${API.COMMENTS}/${id}`,
     });
-  } catch(err) {
+  } catch (err) {
     return {
       error: true,
       message: err,

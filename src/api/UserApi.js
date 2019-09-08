@@ -1,13 +1,13 @@
-import axios from "axios";
-import { API } from "../const/Api";
+import axios from 'axios';
+import API from '../const/Api';
 
-export const getAllUser = async() => {
+export const getAllUser = async () => {
   try {
-    const res_user = await axios(API.USERS);
+    const resUser = await axios(API.USERS);
     return {
-      users: res_user.data,
+      users: resUser.data,
     };
-  } catch(err) {
+  } catch (err) {
     return {
       error: true,
       message: err,
@@ -15,13 +15,13 @@ export const getAllUser = async() => {
   }
 };
 
-export const getUser = async(id) => {
+export const getUser = async (id) => {
   try {
-    const res_user = await axios(API.USERS + "/" + id);
+    const resUser = await axios(`${API.USERS}/${id}`);
     return {
-      user: res_user.data,
+      user: resUser.data,
     };
-  } catch(err) {
+  } catch (err) {
     return {
       error: true,
       message: err,

@@ -1,7 +1,10 @@
-import React, { useState, useRef, useEffect, useCallback, useContext } from "react";
+import React, {
+  useState, useRef, useEffect, useCallback, useContext,
+} from 'react';
+import PropTypes from 'prop-types';
 import { Modal, Button, Form } from 'react-bootstrap';
-import { PostsContext } from "../context/PostsContext";
-import { addPost, updatePost } from "../api/PostApi";
+import { PostsContext } from '../context/PostsContext';
+import { addPost, updatePost } from '../api/PostApi';
 
 const PostEditModal = ({ isShown, post }) => {
   const [show, setShow] = useState(false);
@@ -12,11 +15,6 @@ const PostEditModal = ({ isShown, post }) => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [posts, setPosts] = useContext(PostsContext);
-  const inputProps = {
-    disabled: isLoading,
-    as: "textarea",
-    rows: "3"
-  };
   useEffect(() => {
     if (skipInitialRender.current) {
       skipInitialRender.current = false;
@@ -25,49 +23,60 @@ const PostEditModal = ({ isShown, post }) => {
     }
   }, [isShown]);
 
-  const add = useCallback( async() => {
+  const add = useCallback(async () => {
     setIsLoading(true);
     const inputTitle = title.current.value;
     const inputBody = body.current.value;
-    if (inputTitle === "" || inputBody === "") return;
-    const res = post.id ?
-      await updatePost(post.id, inputTitle, inputBody)
-      :
-      await addPost(1, inputTitle, inputBody);
+    if (inputTitle === '' || inputBody === '') return;
+    const res = post.id
+      ? await updatePost(post.id, inputTitle, inputBody) : await addPost(1, inputTitle, inputBody);
+    let newPosts = [];
     if (!res.error) {
-      var new_posts = [];
       if (!post.id) {
-        posts.unshift(res.data)
-        new_posts = posts.filter((c) => c.id !== -1);
+        posts.unshift(res.data);
+        newPosts = posts.filter((c) => c.id !== -1);
       } else {
-        posts.forEach((p, i) => {
+        posts.forEach((p) => {
           if (p.id === post.id) {
-            p.body = inputBody;
-            p.title = inputTitle;
+            const newP = { ...p, body: inputBody, title: inputTitle };
+            newPosts.push(newP);
+          } else {
+            newPosts.push(p);
           }
-          new_posts.push(p);
         });
       }
-      setPosts(new_posts);
+      setPosts(newPosts);
       handleClose();
     }
     setIsLoading(false);
-  }, [posts, post.id, setPosts]);
+  }, [posts, post, setPosts]);
 
-  return(
+  return (
     <>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>{post.id ? "Edit Post" : "Add Post"}</Modal.Title>
+          <Modal.Title>{post.id ? 'Edit Post' : 'Add Post'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form.Group>
             <Form.Label>Title</Form.Label>
-            <Form.Control {...inputProps} ref={title} defaultValue={post.title || ""}/>
+            <Form.Control
+              disabled={isLoading}
+              as="textarea"
+              rows="3"
+              ref={title}
+              defaultValue={post.title || ''}
+            />
           </Form.Group>
           <Form.Group>
             <Form.Label>Body</Form.Label>
-            <Form.Control {...inputProps} ref={body} defaultValue={post.body || ""}/>
+            <Form.Control
+              disabled={isLoading}
+              as="textarea"
+              rows="3"
+              ref={body}
+              defaultValue={post.body || ''}
+            />
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
@@ -75,12 +84,17 @@ const PostEditModal = ({ isShown, post }) => {
             Close
           </Button>
           <Button variant="primary" onClick={() => add()} disabled={isLoading}>
-            {post.id ? "Save Changes" : "Add Post"}
+            {post.id ? 'Save Changes' : 'Add Post'}
           </Button>
         </Modal.Footer>
       </Modal>
     </>
   );
-}
+};
 
 export default PostEditModal;
+
+PostEditModal.propTypes = {
+  isShown: PropTypes.bool.isRequired,
+  post: PropTypes.instanceOf(Object).isRequired,
+};

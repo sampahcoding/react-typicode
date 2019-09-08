@@ -1,13 +1,13 @@
-import axios from "axios";
-import { API } from "../const/Api";
+import axios from 'axios';
+import API from '../const/Api';
 
-export const getPostByUser = async(id) => {
+export const getPostByUser = async (id) => {
   try {
-    const response = await axios(API.POSTS + "?userId=" + id);
+    const response = await axios(`${API.POSTS}?userId=${id}`);
     return {
       posts: response.data,
     };
-  } catch(err) {
+  } catch (err) {
     return {
       error: true,
       message: err,
@@ -15,13 +15,13 @@ export const getPostByUser = async(id) => {
   }
 };
 
-export const getPost = async(id) => {
+export const getPost = async (id) => {
   try {
-    const response = await axios(API.POSTS + "/" + id);
+    const response = await axios(`${API.POSTS}/${id}`);
     return {
       post: response.data,
     };
-  } catch(err) {
+  } catch (err) {
     return {
       error: true,
       message: err,
@@ -29,19 +29,19 @@ export const getPost = async(id) => {
   }
 };
 
-export const addPost = async(id, title, body) => {
+export const addPost = async (userId, title, body) => {
   try {
     return await axios({
       method: 'POST',
       url: API.POSTS,
-      headers: { "Content-type": "application/json; charset=UTF-8" },
+      headers: { 'Content-type': 'application/json; charset=UTF-8' },
       data: JSON.stringify({
-        title: title,
-        body: body,
-        userId: id
-      })
+        title,
+        body,
+        userId,
+      }),
     });
-  } catch(err) {
+  } catch (err) {
     return {
       error: true,
       message: err,
@@ -49,19 +49,19 @@ export const addPost = async(id, title, body) => {
   }
 };
 
-export const updatePost = async(id, title, body) => {
+export const updatePost = async (id, title, body) => {
   try {
     return await axios({
       method: 'PUT',
-      url: API.POSTS + "/" + id,
-      headers: { "Content-type": "application/json; charset=UTF-8" },
+      url: `${API.POSTS}/${id}`,
+      headers: { 'Content-type': 'application/json; charset=UTF-8' },
       data: JSON.stringify({
-        title: title,
-        body: body,
-        id: id,
-      })
+        title,
+        body,
+        id,
+      }),
     });
-  } catch(err) {
+  } catch (err) {
     return {
       error: true,
       message: err,
@@ -69,13 +69,13 @@ export const updatePost = async(id, title, body) => {
   }
 };
 
-export const deletePost = async(id) => {
+export const deletePost = async (id) => {
   try {
     return await axios({
       method: 'DELETE',
-      url: API.POSTS + '/' + id,
+      url: `${API.POSTS}/${id}`,
     });
-  } catch(err) {
+  } catch (err) {
     return {
       error: true,
       message: err,

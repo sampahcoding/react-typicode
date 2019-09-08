@@ -4,18 +4,23 @@ import PropTypes from 'prop-types';
 const PostsContext = React.createContext();
 
 const PostsProvider = (props) => {
-  const [posts, setPosts] = useState(props.posts);
+  const { data, children } = props;
+  const [posts, setPosts] = useState(data);
 
   return (
     <PostsContext.Provider value={[posts, setPosts]}>
-      {props.children}
+      {children}
     </PostsContext.Provider>
   );
-}
+};
 
 export { PostsContext, PostsProvider };
 
 PostsProvider.propTypes = {
-  posts: PropTypes.array,
-  children: PropTypes.object
+  data: PropTypes.arrayOf(PropTypes.string),
+  children: PropTypes.instanceOf(Object),
+};
+PostsProvider.defaultProps = {
+  data: [],
+  children: <></>,
 };

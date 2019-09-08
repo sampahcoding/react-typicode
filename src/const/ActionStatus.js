@@ -1,11 +1,11 @@
 export const loading = {
-  isLoading: true, isError: false, isDone: false
+  isLoading: true, isError: false, isDone: false,
 };
 
 export const error = {
-  isLoading: false, isError: true, isDone: true
+  isLoading: false, isError: true, isDone: true,
 };
 
 export const done = {
-  isLoading: false, isError: false, isDone: true
+  isLoading: false, isError: false, isDone: true,
 };

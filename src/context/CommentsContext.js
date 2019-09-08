@@ -4,18 +4,24 @@ import PropTypes from 'prop-types';
 const CommentsContext = React.createContext();
 
 const CommentsProvider = (props) => {
-  const [comments, setComments] = useState(props.comments);
+  const { data, children } = props;
+  const [comments, setComments] = useState(data);
 
   return (
     <CommentsContext.Provider value={[comments, setComments]}>
-      {props.children}
+      {children}
     </CommentsContext.Provider>
   );
-}
+};
 
 export { CommentsContext, CommentsProvider };
 
 CommentsProvider.propTypes = {
-  comments: PropTypes.array,
-  children: PropTypes.array
+  data: PropTypes.arrayOf(PropTypes.string),
+  children: PropTypes.arrayOf(PropTypes.string),
+};
+
+CommentsProvider.defaultProps = {
+  data: [],
+  children: <></>,
 };

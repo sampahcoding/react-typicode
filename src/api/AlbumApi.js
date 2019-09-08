@@ -1,13 +1,13 @@
-import axios from "axios";
-import { API } from "../const/Api";
+import axios from 'axios';
+import API from '../const/Api';
 
-export const getAlbumByUser = async(id) => {
+export const getAlbumByUser = async (id) => {
   try {
-    const response = await axios(API.ALBUMS + "?userId=" + id);
+    const response = await axios(`${API.ALBUMS}?userId=${id}`);
     return {
       albums: response.data,
     };
-  } catch(err) {
+  } catch (err) {
     return {
       error: true,
       message: err,
@@ -15,13 +15,13 @@ export const getAlbumByUser = async(id) => {
   }
 };
 
-export const getAlbum = async(id) => {
+export const getAlbum = async (id) => {
   try {
-    const response = await axios(API.ALBUMS + "/" + id);
+    const response = await axios(`${API.ALBUMS}/${id}`);
     return {
       album: response.data,
     };
-  } catch(err) {
+  } catch (err) {
     return {
       error: true,
       message: err,

@@ -1,5 +1,5 @@
-import { PHOTOS } from "../const/ActionType";
-import { loading, error, done } from "../const/ActionStatus";
+import { PHOTOS } from '../const/ActionType';
+import { loading, error, done } from '../const/ActionStatus';
 
 export const initialPhotosState = {
   isLoading: false,
@@ -11,11 +11,11 @@ export const initialPhotosState = {
 export function photoReducer(state, action) {
   switch (action.type) {
     case PHOTOS.LOADING:
-      return {...state, ...loading};
+      return { ...state, ...loading };
     case PHOTOS.ERROR:
-      return {...state, ...error};
+      return { ...state, ...error };
     case PHOTOS.DONE:
-      return {...state, ...done, ...action.data};
+      return { ...state, ...done, ...action.data };
     default:
       throw new Error();
   }
