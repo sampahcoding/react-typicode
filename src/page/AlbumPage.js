@@ -6,6 +6,7 @@ import { initialState, albumReducer } from '../reducer/AlbumReducer';
 import { initialPhotosState, photoReducer } from '../reducer/PhotoReducer';
 import { ALBUM, PHOTOS } from '../const/ActionType';
 import Loader from '../components/Loader';
+import Image from '../components/Image';
 
 const AlbumPage = (history) => {
   const { match } = history;
@@ -55,7 +56,9 @@ const AlbumPage = (history) => {
         {photos.photos.map((photo) => (
           <Col md={3} key={photo.id}>
             <Card style={{ marginBottom: '15px' }}>
-              <Card.Img variant="top" src={photo.thumbnailUrl} />
+              <Image>
+                <Card.Img variant="top" src={photo.thumbnailUrl} />
+              </Image>
               <Card.Body>
                 <Card.Text>{photo.title}</Card.Text>
               </Card.Body>

@@ -20,5 +20,9 @@ const Loader = ({ mid }) => (
 export default Loader;
 
 Loader.propTypes = {
-  mid: PropTypes.bool.isRequired,
+  mid: PropTypes.bool,
+};
+
+Loader.defaultProps = {
+  mid: false,
 };
