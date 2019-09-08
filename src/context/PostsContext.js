@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useReducer } from 'react';
 import PropTypes from 'prop-types';
+import { initialState, postReducer } from '../reducer/PostReducer';
 
 const PostsContext = React.createContext();
 
 const PostsProvider = (props) => {
-  const { data, children } = props;
-  const [posts, setPosts] = useState(data);
+  const { children } = props;
+  const [data, setData] = useReducer(postReducer, initialState);
 
   return (
-    <PostsContext.Provider value={[posts, setPosts]}>
+    <PostsContext.Provider value={[data, setData]}>
       {children}
     </PostsContext.Provider>
   );
@@ -17,10 +18,8 @@ const PostsProvider = (props) => {
 export { PostsContext, PostsProvider };
 
 PostsProvider.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.string),
   children: PropTypes.instanceOf(Object),
 };
 PostsProvider.defaultProps = {
-  data: [],
   children: <></>,
 };

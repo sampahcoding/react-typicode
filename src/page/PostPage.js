@@ -22,7 +22,7 @@ const PostPage = (history) => {
   }, [id]);
 
   const memoizedComments = useMemo(() => (
-    <CommentsProvider data={[]}>
+    <CommentsProvider>
       <Comments id={id} />
     </CommentsProvider>
   ), [id]);

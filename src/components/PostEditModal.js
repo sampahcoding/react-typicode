@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { PostsContext } from '../context/PostsContext';
 import { addPost, updatePost } from '../api/PostApi';
+import { USERPOSTS } from '../const/ActionType';
 
 const PostEditModal = ({ isShown, post }) => {
   const [show, setShow] = useState(false);
@@ -14,7 +15,7 @@ const PostEditModal = ({ isShown, post }) => {
   const skipInitialRender = useRef(true);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const [posts, setPosts] = useContext(PostsContext);
+  const [data, setData] = useContext(PostsContext);
   useEffect(() => {
     if (skipInitialRender.current) {
       skipInitialRender.current = false;
@@ -33,10 +34,10 @@ const PostEditModal = ({ isShown, post }) => {
     let newPosts = [];
     if (!res.error) {
       if (!post.id) {
-        posts.unshift(res.data);
-        newPosts = posts.filter((c) => c.id !== -1);
+        data.posts.unshift(res.data);
+        newPosts = data.posts.filter((c) => c.id !== -1);
       } else {
-        posts.forEach((p) => {
+        data.posts.forEach((p) => {
           if (p.id === post.id) {
             const newP = { ...p, body: inputBody, title: inputTitle };
             newPosts.push(newP);
@@ -45,11 +46,14 @@ const PostEditModal = ({ isShown, post }) => {
           }
         });
       }
-      setPosts(newPosts);
+      setData({
+        type: USERPOSTS.DONE,
+        data: { posts: newPosts },
+      });
       handleClose();
     }
     setIsLoading(false);
-  }, [posts, post, setPosts]);
+  }, [data, post, setData]);
 
   return (
     <>

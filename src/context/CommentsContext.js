@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useReducer } from 'react';
 import PropTypes from 'prop-types';
+import { initialState, commentReducer } from '../reducer/CommentReducer';
 
 const CommentsContext = React.createContext();
 
 const CommentsProvider = (props) => {
-  const { data, children } = props;
-  const [comments, setComments] = useState(data);
+  const { children } = props;
+  const [data, setData] = useReducer(commentReducer, initialState);
 
   return (
-    <CommentsContext.Provider value={[comments, setComments]}>
+    <CommentsContext.Provider value={[data, setData]}>
       {children}
     </CommentsContext.Provider>
   );
@@ -17,10 +18,5 @@ const CommentsProvider = (props) => {
 export { CommentsContext, CommentsProvider };
 
 CommentsProvider.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.string),
   children: PropTypes.instanceOf(Object).isRequired,
-};
-
-CommentsProvider.defaultProps = {
-  data: [],
 };

@@ -7,26 +7,38 @@ import {
 } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import { CommentsContext } from '../context/CommentsContext';
-import { updateComment } from '../api/CommentApi';
+import { updateComment, deleteComment } from '../api/CommentApi';
+import { COMMENTS } from '../const/ActionType';
 
 const CommentItem = ({ comment }) => {
-  const [comments, setComments] = useContext(CommentsContext);
+  const [data, setData] = useContext(CommentsContext);
   const [isEdit, setIsEdit] = useState(false);
   const inputComment = useRef();
   const handleClose = () => setIsEdit(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const remove = useCallback(() => {
-    const newComment = comments.filter((c) => c.id !== comment.id);
-    setComments(newComment);
-  }, [comments, comment, setComments]);
+  const remove = useCallback(async () => {
+    setIsLoading(true);
+    const res = await deleteComment(comment.id);
+    if (!res.error) {
+      const newComment = data.comments.filter((c) => c.id !== comment.id);
+      setData({
+        type: COMMENTS.DONE,
+        data: { comments: newComment },
+      });
+    } else {
+      setIsLoading(false);
+    }
+  }, [data, setData, comment]);
 
   const save = useCallback(async () => {
+    setIsLoading(true);
     const val = inputComment.current.value;
     if (val === '') return;
     const res = await updateComment(comment.id, val);
     if (!res.error) {
       const newComment = [];
-      comments.forEach((c) => {
+      data.comments.forEach((c) => {
         if (c.id === comment.id) {
           const newC = { ...c, body: val };
           newComment.push(newC);
@@ -34,11 +46,15 @@ const CommentItem = ({ comment }) => {
           newComment.push(c);
         }
       });
-      setComments(newComment);
+      setData({
+        type: COMMENTS.DONE,
+        data: { comments: newComment },
+      });
+      setIsLoading(false);
       inputComment.current.value = '';
       setIsEdit(false);
     }
-  }, [comment, comments, setComments]);
+  }, [comment, data, setData]);
 
   return (
     <ListGroup.Item key={comment.id}>
@@ -46,11 +62,18 @@ const CommentItem = ({ comment }) => {
       <br />
       { isEdit ? (
         <Form.Group controlId="exampleForm.ControlTextarea1">
-          <Form.Control as="textarea" rows="3" ref={inputComment} defaultValue={comment.body} />
+          <Form.Control
+            as="textarea"
+            rows="3"
+            ref={inputComment}
+            defaultValue={comment.body}
+            disabled={isLoading}
+          />
           <Button
             variant="primary"
             size="sm"
             onClick={() => save()}
+            disabled={isLoading}
             style={{ marginTop: '10px', float: 'right' }}
           >
             Save
@@ -59,6 +82,7 @@ const CommentItem = ({ comment }) => {
             variant="secondary"
             size="sm"
             onClick={handleClose}
+            disabled={isLoading}
             style={{ marginRight: '10px', marginTop: '10px', float: 'right' }}
           >
             Cancel
@@ -68,10 +92,24 @@ const CommentItem = ({ comment }) => {
         : comment.body}
       <ButtonToolbar style={{ justifyContent: 'flex-end', display: isEdit ? 'none' : 'flex' }}>
         <ButtonGroup className="mr-2">
-          <Button variant="primary" size="sm" onClick={() => setIsEdit(!isEdit)}>Edit</Button>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setIsEdit(!isEdit)}
+            disabled={isLoading}
+          >
+            Edit
+          </Button>
         </ButtonGroup>
         <ButtonGroup>
-          <Button variant="secondary" size="sm" onClick={() => remove()}>Delete</Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => remove()}
+            disabled={isLoading}
+          >
+            Delete
+          </Button>
         </ButtonGroup>
       </ButtonToolbar>
     </ListGroup.Item>
