@@ -69,9 +69,9 @@ const PostEditModal = ({ isShown, post }) => {
 
   return (
     <>
-      <Modal show={show} onHide={handleClose}>
+      <Modal show={show} onHide={handleClose} className={show ? 'tdd-modal' : ''}>
         <Modal.Header closeButton>
-          <Modal.Title>{post.id ? `Edit - ${post.title}` : 'Add Post'}</Modal.Title>
+          <Modal.Title className="tdd-title">{post.id ? `Edit - ${post.title}` : 'Add Post'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {
@@ -108,7 +108,7 @@ const PostEditModal = ({ isShown, post }) => {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose} disabled={isLoading}>
+          <Button variant="secondary" className="tdd-close" onClick={handleClose} disabled={isLoading}>
             Close
           </Button>
           <Button variant="primary" onClick={() => add()} disabled={isLoading}>
