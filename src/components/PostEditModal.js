@@ -2,7 +2,9 @@ import React, {
   useState, useRef, useEffect, useCallback, useContext,
 } from 'react';
 import PropTypes from 'prop-types';
-import { Modal, Button, Form } from 'react-bootstrap';
+import {
+  Modal, Button, Form, Alert,
+} from 'react-bootstrap';
 import { PostsContext } from '../context/PostsContext';
 import { addPost, updatePost } from '../api/PostApi';
 import { USERPOSTS } from '../const/ActionType';
@@ -15,6 +17,8 @@ const PostEditModal = ({ isShown, post }) => {
   const skipInitialRender = useRef(true);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const [modalErrorShow, setModalErrorShow] = useState(false);
+  const [error, setError] = useState('');
   const [data, setData] = useContext(PostsContext);
   useEffect(() => {
     if (skipInitialRender.current) {
@@ -28,7 +32,13 @@ const PostEditModal = ({ isShown, post }) => {
     setIsLoading(true);
     const inputTitle = title.current.value;
     const inputBody = body.current.value;
-    if (inputTitle === '' || inputBody === '') return;
+    if (inputTitle === '' || inputBody === '') {
+      setError('Input cannot be empty');
+      setModalErrorShow(true);
+      setIsLoading(false);
+      return;
+    }
+    setError('');
     const res = post.id
       ? await updatePost(post.id, inputTitle, inputBody) : await addPost(1, inputTitle, inputBody);
     let newPosts = [];
@@ -51,6 +61,8 @@ const PostEditModal = ({ isShown, post }) => {
         data: { posts: newPosts },
       });
       handleClose();
+    } else {
+      setModalErrorShow(true);
     }
     setIsLoading(false);
   }, [data, post, setData]);
@@ -59,15 +71,26 @@ const PostEditModal = ({ isShown, post }) => {
     <>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>{post.id ? 'Edit Post' : 'Add Post'}</Modal.Title>
+          <Modal.Title>{post.id ? `Edit - ${post.title}` : 'Add Post'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          {
+            modalErrorShow && (
+              <Alert variant="danger" onClose={() => setModalErrorShow(false)} dismissible>
+                <Alert.Heading>Something Wrong!</Alert.Heading>
+                <p>
+                  {error !== '' ? error : 'Cannot save data...'}
+                </p>
+              </Alert>
+            )
+          }
           <Form.Group>
             <Form.Label>Title</Form.Label>
             <Form.Control
               disabled={isLoading}
               as="textarea"
-              rows="3"
+              rows="2"
+              placeholder="Write a title..."
               ref={title}
               defaultValue={post.title || ''}
             />
@@ -77,6 +100,7 @@ const PostEditModal = ({ isShown, post }) => {
             <Form.Control
               disabled={isLoading}
               as="textarea"
+              placeholder="Write a content..."
               rows="3"
               ref={body}
               defaultValue={post.body || ''}

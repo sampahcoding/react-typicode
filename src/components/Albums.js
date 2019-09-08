@@ -30,7 +30,7 @@ const Albums = ({ id }) => {
           {data.isLoading && <Loader mid />}
           {
             data.isDone && data.albums.map((album) => (
-              <ListGroup.Item key={album.id}>
+              <ListGroup.Item key={album.id} variant="light">
                 <Card.Link href={`/album/${album.id}`}>{album.title}</Card.Link>
               </ListGroup.Item>
             ))

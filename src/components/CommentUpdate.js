@@ -17,7 +17,10 @@ const CommentUpdate = ({ id }) => {
   const add = useCallback(async () => {
     setIsLoading(true);
     const val = inputComment.current.value;
-    if (val === '') return;
+    if (val === '') {
+      setIsLoading(false);
+      return;
+    }
     const res = await addComment(id, 'anonymous', 'anonymous@example.com', val);
     if (!res.error) {
       data.comments.unshift(res.data);
@@ -33,7 +36,13 @@ const CommentUpdate = ({ id }) => {
 
   return (
     <Form.Group controlId="exampleForm.ControlTextarea1">
-      <Form.Control as="textarea" rows="3" ref={inputComment} disabled={isLoading} />
+      <Form.Control
+        as="textarea"
+        rows="3"
+        ref={inputComment}
+        disabled={isLoading}
+        placeholder="Write a comment..."
+      />
       <Button
         variant="primary"
         size="sm"

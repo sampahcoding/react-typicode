@@ -10,7 +10,7 @@ const Image = (props) => {
       {
         ({ isVisible }) => {
           // load image only one time, first time visible on screen.
-          if (isVisible) {
+          if (isVisible && !shown) {
             setShown(true);
           }
           return (

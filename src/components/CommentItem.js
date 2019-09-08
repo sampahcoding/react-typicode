@@ -34,7 +34,11 @@ const CommentItem = ({ comment }) => {
   const save = useCallback(async () => {
     setIsLoading(true);
     const val = inputComment.current.value;
-    if (val === '') return;
+    if (val === '') {
+      setIsEdit(false);
+      setIsLoading(false);
+      return;
+    }
     const res = await updateComment(comment.id, val);
     if (!res.error) {
       const newComment = [];
@@ -57,7 +61,7 @@ const CommentItem = ({ comment }) => {
   }, [comment, data, setData]);
 
   return (
-    <ListGroup.Item key={comment.id}>
+    <ListGroup.Item key={comment.id} disabled={isLoading}>
       <h5>{`${comment.name}, ${comment.email}`}</h5>
       <br />
       { isEdit ? (
@@ -65,6 +69,7 @@ const CommentItem = ({ comment }) => {
           <Form.Control
             as="textarea"
             rows="3"
+            placeholder="Write a comment..."
             ref={inputComment}
             defaultValue={comment.body}
             disabled={isLoading}
