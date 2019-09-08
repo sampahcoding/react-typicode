@@ -20,6 +20,7 @@ export { PostsContext, PostsProvider };
 PostsProvider.propTypes = {
   children: PropTypes.instanceOf(Object),
 };
+
 PostsProvider.defaultProps = {
   children: <></>,
 };

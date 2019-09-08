@@ -1,4 +1,6 @@
-import React, { useEffect, useReducer, useCallback } from 'react';
+import React, {
+  useEffect, useReducer, useCallback, useState,
+} from 'react';
 import { Row, Col, Card } from 'react-bootstrap';
 import { getAlbum } from '../api/AlbumApi';
 import { getPhotosByAlbum } from '../api/PhotoApi';
@@ -7,12 +9,15 @@ import { initialPhotosState, photoReducer } from '../reducer/PhotoReducer';
 import { ALBUM, PHOTOS } from '../const/ActionType';
 import Loader from '../components/Loader';
 import Image from '../components/Image';
+import PhotoDetailModal from '../components/PhotoDetailModal';
 import getParamId from '../helper/Browser';
 
 const AlbumPage = (history) => {
   const id = getParamId(history);
   const [data, setData] = useReducer(albumReducer, initialState);
   const [photos, setPhotos] = useReducer(photoReducer, initialPhotosState);
+  const [isShown, setIsShown] = useState(false);
+  const [modalPhotoData, setModalPhotoData] = useState({});
 
   const getData = useCallback(async () => {
     const res = await getAlbum(id);
@@ -29,6 +34,11 @@ const AlbumPage = (history) => {
       data: res,
     });
   }, [id]);
+
+  const openModal = useCallback((dataPhoto) => {
+    setModalPhotoData(dataPhoto);
+    setIsShown(!isShown);
+  }, [isShown]);
 
   useEffect(() => {
     setData({ type: ALBUM.LOADING });
@@ -54,18 +64,19 @@ const AlbumPage = (history) => {
       {photos.isError && <p>Something with loading photos....</p>}
       <Row>
         {photos.photos.map((photo) => (
-          <Col md={3} key={photo.id}>
+          <Col md={3} key={photo.id} onClick={() => openModal(photo)} style={{ cursor: 'pointer' }}>
             <Card style={{ marginBottom: '15px' }}>
               <Image>
                 <Card.Img variant="top" src={photo.thumbnailUrl} />
               </Image>
               <Card.Body>
-                <Card.Text>{photo.title}</Card.Text>
+                <Card.Text className="mb-2 text-muted">{`${photo.title.substring(0, 20)}...`}</Card.Text>
               </Card.Body>
             </Card>
           </Col>
         ))}
       </Row>
+      <PhotoDetailModal photo={modalPhotoData} isShown={isShown} />
     </>
   );
 };
