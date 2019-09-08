@@ -67,7 +67,7 @@ const AlbumPage = (history) => {
           <Col md={3} key={photo.id} onClick={() => openModal(photo)} style={{ cursor: 'pointer' }}>
             <Card style={{ marginBottom: '15px' }}>
               <Image>
-                <Card.Img variant="top" src={photo.thumbnailUrl} />
+                <Card.Img variant="top" src={photo.thumbnailUrl} style={{ position: 'absolute' }} />
               </Image>
               <Card.Body>
                 <Card.Text className="mb-2 text-muted">{`${photo.title.substring(0, 20)}...`}</Card.Text>

@@ -15,15 +15,14 @@ const Image = (props) => {
           }
           return (
             <>
-              { shown ? children : (
-                <div style={{
-                  width: '100%',
-                  paddingTop: '100%',
-                  position: 'relative',
-                  backgroundColor: '#bfbfbf12',
-                }}
-                />
-              ) }
+              { shown ? children : null }
+              <div style={{
+                width: '100%',
+                paddingTop: '100%',
+                position: 'relative',
+                backgroundColor: '#bfbfbf12',
+              }}
+              />
             </>
           );
         }
