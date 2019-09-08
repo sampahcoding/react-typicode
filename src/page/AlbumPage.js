@@ -7,10 +7,10 @@ import { initialPhotosState, photoReducer } from '../reducer/PhotoReducer';
 import { ALBUM, PHOTOS } from '../const/ActionType';
 import Loader from '../components/Loader';
 import Image from '../components/Image';
+import getParamId from '../helper/Browser';
 
 const AlbumPage = (history) => {
-  const { match } = history;
-  const { id } = match.params;
+  const id = getParamId(history);
   const [data, setData] = useReducer(albumReducer, initialState);
   const [photos, setPhotos] = useReducer(photoReducer, initialPhotosState);
 

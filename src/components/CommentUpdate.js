@@ -16,7 +16,7 @@ const CommentUpdate = ({ id }) => {
     const res = await addComment(id, 'anonymous', 'anonymous@example.com', val);
     if (!res.error) {
       comments.unshift(res.data);
-      const newComment = comments.filter((c) => c.id !== -1); // bug
+      const newComment = comments.filter((c) => c.id !== -1);
       setComments(newComment);
       inputComment.current.value = '';
     }

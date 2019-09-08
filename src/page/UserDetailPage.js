@@ -9,10 +9,10 @@ import Loader from '../components/Loader';
 import Posts from '../components/Posts';
 import Albums from '../components/Albums';
 import { PostsProvider } from '../context/PostsContext';
+import getParamId from '../helper/Browser';
 
 const UserPage = (history) => {
-  const { match } = history;
-  const { id } = match.params;
+  const id = getParamId(history);
   const [data, setData] = useReducer(usersReducer, initialState);
 
   const getData = useCallback(async () => {

@@ -6,10 +6,11 @@ import { initialState, postReducer } from '../reducer/PostReducer';
 import { POST } from '../const/ActionType';
 import Loader from '../components/Loader';
 import Comments from '../components/Comments';
+import { CommentsProvider } from '../context/CommentsContext';
+import getParamId from '../helper/Browser';
 
 const PostPage = (history) => {
-  const { match } = history;
-  const { id } = match.params;
+  const id = getParamId(history);
   const [data, setData] = useReducer(postReducer, initialState);
 
   const getData = useCallback(async () => {
@@ -20,7 +21,11 @@ const PostPage = (history) => {
     });
   }, [id]);
 
-  const memoizedComments = useMemo(() => (<Comments id={id} />), [id]);
+  const memoizedComments = useMemo(() => (
+    <CommentsProvider data={[]}>
+      <Comments id={id} />
+    </CommentsProvider>
+  ), [id]);
 
   useEffect(() => {
     setData({ type: POST.LOADING });

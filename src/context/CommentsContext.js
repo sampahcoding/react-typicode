@@ -18,10 +18,9 @@ export { CommentsContext, CommentsProvider };
 
 CommentsProvider.propTypes = {
   data: PropTypes.arrayOf(PropTypes.string),
-  children: PropTypes.arrayOf(PropTypes.string),
+  children: PropTypes.instanceOf(Object).isRequired,
 };
 
 CommentsProvider.defaultProps = {
   data: [],
-  children: <></>,
 };
