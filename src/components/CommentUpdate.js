@@ -23,6 +23,7 @@ const CommentUpdate = ({ id }) => {
     }
     const res = await addComment(id, 'anonymous', 'anonymous@example.com', val);
     if (!res.error) {
+      res.data.id = 501 + (Math.random() * 4);
       data.comments.unshift(res.data);
       const newComment = data.comments.filter((c) => c.id !== -1);
       setData({

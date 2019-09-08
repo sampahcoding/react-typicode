@@ -2,7 +2,7 @@ import React, {
   useContext, useCallback, useState, useRef,
 } from 'react';
 import {
-  ListGroup, Button, Form,
+  ListGroup, Button, Form, Alert,
   ButtonToolbar, ButtonGroup,
 } from 'react-bootstrap';
 import PropTypes from 'prop-types';
@@ -16,6 +16,7 @@ const CommentItem = ({ comment }) => {
   const inputComment = useRef();
   const handleClose = () => setIsEdit(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorShow, setErrorShow] = useState(false);
 
   const remove = useCallback(async () => {
     setIsLoading(true);
@@ -41,6 +42,7 @@ const CommentItem = ({ comment }) => {
     }
     const res = await updateComment(comment.id, val);
     if (!res.error) {
+      setErrorShow(false);
       const newComment = [];
       data.comments.forEach((c) => {
         if (c.id === comment.id) {
@@ -57,6 +59,9 @@ const CommentItem = ({ comment }) => {
       setIsLoading(false);
       inputComment.current.value = '';
       setIsEdit(false);
+    } else {
+      setIsLoading(false);
+      setErrorShow(true);
     }
   }, [comment, data, setData]);
 
@@ -74,6 +79,13 @@ const CommentItem = ({ comment }) => {
             defaultValue={comment.body}
             disabled={isLoading}
           />
+          {
+            errorShow && (
+              <Alert variant="danger" onClose={() => setErrorShow(false)} dismissible>
+                Cannot save comment...
+              </Alert>
+            )
+          }
           <Button
             variant="primary"
             size="sm"
