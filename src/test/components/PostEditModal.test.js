@@ -8,7 +8,7 @@ configure({ adapter: new Adapter() });
 
 describe('Edit post modal', () => {
   const component = mount(
-    <PostsProvider posts={[]}>
+    <PostsProvider>
       <PostEditModal isShown post={{}} />
     </PostsProvider>,
   );

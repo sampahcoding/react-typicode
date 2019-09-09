@@ -17,7 +17,7 @@ const PhotoDetailModal = ({ photo, isShown }) => {
 
   return (
     <>
-      <Modal show={show} onHide={handleClose} size="md">
+      <Modal show={show} onHide={handleClose} size="md" className={show ? 'tdd-modal-photo' : ''}>
         <Modal.Header closeButton>
           <Modal.Title>Detail Photo</Modal.Title>
         </Modal.Header>

@@ -70,7 +70,7 @@ const CommentItem = ({ comment }) => {
       <h5>{`${comment.name}, ${comment.email}`}</h5>
       <br />
       { isEdit ? (
-        <Form.Group controlId="exampleForm.ControlTextarea1">
+        <Form.Group controlId="comment-item">
           <Form.Control
             as="textarea"
             rows="3"

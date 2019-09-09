@@ -44,6 +44,7 @@ const PostEditModal = ({ isShown, post }) => {
     let newPosts = [];
     if (!res.error) {
       if (!post.id) {
+        res.data.id = 501 + (Math.random() * 4);
         data.posts.unshift(res.data);
         newPosts = data.posts.filter((c) => c.id !== -1);
       } else {
