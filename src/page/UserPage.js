@@ -42,7 +42,7 @@ const UserPage = () => {
                   <br />
                   {`Company: ${user.company.name}`}
                   <br />
-                  {`Website: ${user.company.website}`}
+                  {`Website: ${user.website}`}
                 </Card.Text>
                 <Button variant="primary" href={`/user/${user.id}`}>Show Detail</Button>
               </Card.Body>
