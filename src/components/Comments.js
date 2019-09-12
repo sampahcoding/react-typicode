@@ -1,29 +1,13 @@
-import React, {
-  useEffect, useCallback, useContext,
-} from 'react';
+import React from 'react';
 import { Card, ListGroup } from 'react-bootstrap';
 import PropTypes from 'prop-types';
-import { getCommentByPost } from '../api/CommentApi';
-import { COMMENTS } from '../const/ActionType';
+import { GetCommentByPost } from '../api/CommentApi';
 import Loader from './Loader';
 import CommentUpdate from './CommentUpdate';
-import { CommentsContext } from '../context/CommentsContext';
 import CommentItem from './CommentItem';
 
 const Comments = ({ id }) => {
-  const [data, setData] = useContext(CommentsContext);
-  const getData = useCallback(async () => {
-    const res = await getCommentByPost(id);
-    setData({
-      type: res.error ? COMMENTS.ERROR : COMMENTS.DONE,
-      data: res,
-    });
-  }, [id, setData]);
-
-  useEffect(() => {
-    setData({ type: COMMENTS.LOADING });
-    setTimeout(getData, 500);
-  }, [getData, setData]);
+  const data = GetCommentByPost(id);
 
   return (
     <>

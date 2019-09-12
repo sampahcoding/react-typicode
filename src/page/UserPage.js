@@ -1,27 +1,12 @@
-import React, { useEffect, useReducer, useCallback } from 'react';
+import React from 'react';
 import {
   Row, Col, Card, Button,
 } from 'react-bootstrap';
-import { getAllUser } from '../api/UserApi';
-import { initialState, usersReducer } from '../reducer/UserReducer';
-import { USERS } from '../const/ActionType';
+import { GetAllUser } from '../api/UserApi';
 import Loader from '../components/Loader';
 
 const UserPage = () => {
-  const [data, setData] = useReducer(usersReducer, initialState);
-
-  const getData = useCallback(async () => {
-    const res = await getAllUser();
-    setData({
-      type: res.error ? USERS.ERROR : USERS.DONE,
-      data: res,
-    });
-  }, []);
-
-  useEffect(() => {
-    setData({ type: USERS.LOADING });
-    setTimeout(getData, 300);
-  }, [getData]);
+  const data = GetAllUser();
 
   return (
     <>

@@ -1,30 +1,41 @@
+import { useEffect, useReducer } from 'react';
 import axios from 'axios';
 import API from '../const/Api';
+import { initialState, usersReducer } from '../reducer/UserReducer';
+import { USERS, USERDETAIL } from '../const/ActionType';
 
-export const getAllUser = async () => {
-  try {
-    const resUser = await axios(API.USERS);
-    return {
-      users: resUser.data,
-    };
-  } catch (err) {
-    return {
-      error: true,
-      message: err,
-    };
-  }
+const GetAllUser = (id) => {
+  const [data, setData] = useReducer(usersReducer, initialState);
+
+  useEffect(() => {
+    setData({ type: USERS.LOADING });
+    axios(API.USERS).then((res) => setData({
+      type: USERS.DONE,
+      data: { users: res.data },
+    })).catch((e) => setData({
+      type: USERS.ERROR,
+      message: e,
+    }));
+  }, [id, setData]);
+
+  return data;
 };
 
-export const getUser = async (id) => {
-  try {
-    const resUser = await axios(`${API.USERS}/${id}`);
-    return {
-      user: resUser.data,
-    };
-  } catch (err) {
-    return {
-      error: true,
-      message: err,
-    };
-  }
+const GetUser = (id) => {
+  const [data, setData] = useReducer(usersReducer, initialState);
+
+  useEffect(() => {
+    setData({ type: USERDETAIL.LOADING });
+    axios(`${API.USERS}/${id}`).then((res) => setData({
+      type: USERDETAIL.DONE,
+      data: { user: res.data },
+    })).catch((e) => setData({
+      type: USERDETAIL.ERROR,
+      message: e,
+    }));
+  }, [id, setData]);
+
+  return data;
 };
+
+export { GetAllUser, GetUser };

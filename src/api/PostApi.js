@@ -1,32 +1,44 @@
+import { useEffect, useContext, useReducer } from 'react';
 import axios from 'axios';
 import API from '../const/Api';
+import { header } from '../const/Base';
+import { USERPOSTS, POST } from '../const/ActionType';
+import { initialState, postReducer } from '../reducer/PostReducer';
 
-export const getPostByUser = async (id) => {
-  try {
-    const response = await axios(`${API.POSTS}?userId=${id}`);
-    return {
-      posts: response.data,
-    };
-  } catch (err) {
-    return {
-      error: true,
-      message: err,
-    };
-  }
+import { PostsContext } from '../context/PostsContext';
+
+const GetPostByUser = (id) => {
+  const [data, setData] = useContext(PostsContext);
+
+  useEffect(() => {
+    setData({ type: USERPOSTS.LOADING });
+    axios(`${API.POSTS}?userId=${id}`).then((res) => setData({
+      type: USERPOSTS.DONE,
+      data: { posts: res.data },
+    })).catch((e) => setData({
+      type: USERPOSTS.ERROR,
+      message: e,
+    }));
+  }, [id, setData]);
+
+  return data;
 };
 
-export const getPost = async (id) => {
-  try {
-    const response = await axios(`${API.POSTS}/${id}`);
-    return {
-      post: response.data,
-    };
-  } catch (err) {
-    return {
-      error: true,
-      message: err,
-    };
-  }
+const GetPost = (id) => {
+  const [data, setData] = useReducer(postReducer, initialState);
+
+  useEffect(() => {
+    setData({ type: POST.LOADING });
+    axios(`${API.POSTS}/${id}`).then((res) => setData({
+      type: POST.DONE,
+      data: { post: res.data },
+    })).catch((e) => setData({
+      type: POST.ERROR,
+      message: e,
+    }));
+  }, [id, setData]);
+
+  return data;
 };
 
 export const addPost = async (userId, title, body) => {
@@ -34,7 +46,7 @@ export const addPost = async (userId, title, body) => {
     return await axios({
       method: 'POST',
       url: API.POSTS,
-      headers: { 'Content-type': 'application/json; charset=UTF-8' },
+      headers: header,
       data: JSON.stringify({
         title,
         body,
@@ -54,7 +66,7 @@ export const updatePost = async (id, title, body) => {
     return await axios({
       method: 'PUT',
       url: `${API.POSTS}/${id}`,
-      headers: { 'Content-type': 'application/json; charset=UTF-8' },
+      headers: header,
       data: JSON.stringify({
         title,
         body,
@@ -82,3 +94,5 @@ export const deletePost = async (id) => {
     };
   }
 };
+
+export { GetPostByUser, GetPost };

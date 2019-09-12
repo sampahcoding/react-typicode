@@ -1,10 +1,8 @@
 import React, {
-  useEffect, useReducer, useCallback, useMemo,
+  useMemo,
 } from 'react';
 import { Row, Col } from 'react-bootstrap';
-import { getUser } from '../api/UserApi';
-import { initialState, usersReducer } from '../reducer/UserReducer';
-import { USERDETAIL } from '../const/ActionType';
+import { GetUser } from '../api/UserApi';
 import Loader from '../components/Loader';
 import Posts from '../components/Posts';
 import Albums from '../components/Albums';
@@ -13,20 +11,7 @@ import getParamId from '../helper/Browser';
 
 const UserPage = (history) => {
   const id = getParamId(history);
-  const [data, setData] = useReducer(usersReducer, initialState);
-
-  const getData = useCallback(async () => {
-    const res = await getUser(id);
-    setData({
-      type: res.error ? USERDETAIL.ERROR : USERDETAIL.DONE,
-      data: res,
-    });
-  }, [id]);
-
-  useEffect(() => {
-    setData({ type: USERDETAIL.LOADING });
-    setTimeout(getData, 500);
-  }, [getData]);
+  const data = GetUser(id);
 
   const MemoizedPost = useMemo(() => (<Posts id={id} />), [id]);
 

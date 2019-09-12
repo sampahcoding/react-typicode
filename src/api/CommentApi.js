@@ -1,18 +1,27 @@
+import {
+  useEffect, useContext,
+} from 'react';
 import axios from 'axios';
 import API from '../const/Api';
+import { COMMENTS } from '../const/ActionType';
+import { CommentsContext } from '../context/CommentsContext';
+import { header } from '../const/Base';
 
-export const getCommentByPost = async (id) => {
-  try {
-    const response = await axios(`${API.COMMENTS}?postId=${id}`);
-    return {
-      comments: response.data,
-    };
-  } catch (err) {
-    return {
-      error: true,
-      message: err,
-    };
-  }
+const GetCommentByPost = (id) => {
+  const [data, setData] = useContext(CommentsContext);
+
+  useEffect(() => {
+    setData({ type: COMMENTS.LOADING });
+    axios(`${API.COMMENTS}?postId=${id}`).then((res) => setData({
+      type: COMMENTS.DONE,
+      data: { comments: res.data },
+    })).catch((e) => setData({
+      type: COMMENTS.ERROR,
+      message: e,
+    }));
+  }, [id, setData]);
+
+  return data;
 };
 
 export const addComment = async (postId, name, email, body) => {
@@ -20,7 +29,7 @@ export const addComment = async (postId, name, email, body) => {
     const res = await axios({
       method: 'POST',
       url: API.COMMENTS,
-      headers: { 'Content-type': 'application/json; charset=UTF-8' },
+      headers: header,
       data: JSON.stringify({
         name,
         email,
@@ -42,7 +51,7 @@ export const updateComment = async (id, body) => {
     return await axios({
       method: 'PUT',
       url: `${API.COMMENTS}/${id}`,
-      headers: { 'Content-type': 'application/json; charset=UTF-8' },
+      headers: header,
       data: JSON.stringify({
         body,
         id,
@@ -69,3 +78,5 @@ export const deleteComment = async (id) => {
     };
   }
 };
+
+export { GetCommentByPost };

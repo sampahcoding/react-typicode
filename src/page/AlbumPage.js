@@ -1,51 +1,23 @@
-import React, {
-  useEffect, useReducer, useCallback, useState,
-} from 'react';
+import React, { useCallback, useState } from 'react';
 import { Row, Col, Card } from 'react-bootstrap';
-import { getAlbum } from '../api/AlbumApi';
-import { getPhotosByAlbum } from '../api/PhotoApi';
-import { initialState, albumReducer } from '../reducer/AlbumReducer';
-import { initialPhotosState, photoReducer } from '../reducer/PhotoReducer';
-import { ALBUM, PHOTOS } from '../const/ActionType';
 import Loader from '../components/Loader';
 import Image from '../components/Image';
 import PhotoDetailModal from '../components/PhotoDetailModal';
 import getParamId from '../helper/Browser';
+import { GetAlbum } from '../api/AlbumApi';
+import GetPhotosByAlbum from '../api/PhotoApi';
 
 const AlbumPage = (history) => {
   const id = getParamId(history);
-  const [data, setData] = useReducer(albumReducer, initialState);
-  const [photos, setPhotos] = useReducer(photoReducer, initialPhotosState);
   const [isShown, setIsShown] = useState(false);
   const [modalPhotoData, setModalPhotoData] = useState({});
-
-  const getData = useCallback(async () => {
-    const res = await getAlbum(id);
-    setData({
-      type: res.error ? ALBUM.ERROR : ALBUM.DONE,
-      data: res,
-    });
-  }, [id]);
-
-  const getPhotos = useCallback(async () => {
-    const res = await getPhotosByAlbum(id);
-    setPhotos({
-      type: res.error ? PHOTOS.ERROR : PHOTOS.DONE,
-      data: res,
-    });
-  }, [id]);
+  const data = GetAlbum(id);
+  const photos = GetPhotosByAlbum(id);
 
   const openModal = useCallback((dataPhoto) => {
     setModalPhotoData(dataPhoto);
     setIsShown(!isShown);
   }, [isShown]);
-
-  useEffect(() => {
-    setData({ type: ALBUM.LOADING });
-    setTimeout(getData, 500);
-    setPhotos({ type: PHOTOS.LOADING });
-    setTimeout(getPhotos, 500);
-  }, [getData, getPhotos]);
 
   return (
     <>
