@@ -1,53 +1,37 @@
 import React, {
-  useContext, useRef, useCallback, useState,
+  useRef, useState, useEffect,
 } from 'react';
 import {
   Button, Form,
 } from 'react-bootstrap';
 import PropTypes from 'prop-types';
-import { CommentsContext } from '../context/CommentsContext';
-import { addComment } from '../api/CommentApi';
-import { COMMENTS } from '../const/ActionType';
+import { AddComment } from '../api/CommentApi';
 
 const CommentUpdate = ({ id }) => {
-  const [data, setData] = useContext(CommentsContext);
-  const inputComment = useRef();
-  const [isLoading, setIsLoading] = useState(false);
+  const inputNewComment = useRef('');
+  const [newComment, setNewComment] = useState('');
+  const { isLoading, done } = AddComment(id, 'anonymous', 'anonymous@example.com', newComment);
 
-  const add = useCallback(async () => {
-    setIsLoading(true);
-    const val = inputComment.current.value;
-    if (val === '') {
-      setIsLoading(false);
-      return;
-    }
-    const res = await addComment(id, 'anonymous', 'anonymous@example.com', val);
-    if (!res.error) {
-      res.data.id = 501 + (Math.random() * 4);
-      data.comments.unshift(res.data);
-      const newComment = data.comments.filter((c) => c.id !== -1);
-      setData({
-        type: COMMENTS.DONE,
-        data: { comments: newComment },
-      });
-      setIsLoading(false);
-      inputComment.current.value = '';
-    }
-  }, [data, id, setData]);
+  useEffect(() => {
+    // clear input on finished posting new comment
+    if (done) inputNewComment.current.value = '';
+  }, [newComment, done]);
 
   return (
     <Form.Group controlId="exampleForm.ControlTextarea1">
       <Form.Control
         as="textarea"
         rows="3"
-        ref={inputComment}
+        ref={inputNewComment}
         disabled={isLoading}
         placeholder="Write a comment..."
       />
       <Button
         variant="primary"
         size="sm"
-        onClick={() => add()}
+        onClick={() => {
+          setNewComment(inputNewComment.current.value);
+        }}
         disabled={isLoading}
         style={{ marginTop: '10px', float: 'right' }}
       >

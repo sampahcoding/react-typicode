@@ -1,5 +1,5 @@
 import {
-  useEffect, useContext,
+  useEffect, useContext, useState,
 } from 'react';
 import axios from 'axios';
 import API from '../const/Api';
@@ -24,9 +24,18 @@ const GetCommentByPost = (id) => {
   return data;
 };
 
-export const addComment = async (postId, name, email, body) => {
-  try {
-    const res = await axios({
+const AddComment = (postId, name, email, body) => {
+  const [data, setData] = useContext(CommentsContext);
+  const [isLoading, setIsLoading] = useState(false);
+  const [done, setIsDone] = useState(false);
+
+  useEffect(() => {
+    if (body === '') {
+      setIsLoading(false);
+      return;
+    }
+    setIsLoading(true);
+    axios({
       method: 'POST',
       url: API.COMMENTS,
       headers: header,
@@ -36,19 +45,41 @@ export const addComment = async (postId, name, email, body) => {
         body,
         postId,
       }),
+    }).then((res) => {
+      // res done
+      res.data.id = 501 + (Math.random() * 4);
+      data.comments.unshift(res.data);
+      const newComment = data.comments.filter((c) => c.id !== -1);
+      setData({
+        type: COMMENTS.DONE,
+        data: { comments: newComment },
+      });
+      setIsLoading(false);
+      setIsDone(true);
+    }).catch(() => {
+      setIsDone(true);
+      setIsLoading(false);
     });
-    return res;
-  } catch (err) {
-    return {
-      error: true,
-      message: err,
-    };
-  }
+  }, [body]);
+
+  return { isLoading, done };
 };
 
-export const updateComment = async (id, body) => {
-  try {
-    return await axios({
+const UpdateComment = (id, body) => {
+  const [data, setData] = useContext(CommentsContext);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorShow, setErrorShow] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+
+  useEffect(() => {
+    if (id === 0) return;
+    if (body === '') {
+      setIsLoading(false);
+      setIsEdit(false);
+      return;
+    }
+    setIsLoading(true);
+    axios({
       method: 'PUT',
       url: `${API.COMMENTS}/${id}`,
       headers: header,
@@ -56,27 +87,61 @@ export const updateComment = async (id, body) => {
         body,
         id,
       }),
+    }).then(() => {
+      // res done
+      setErrorShow(false);
+      const newComment = [];
+      data.comments.forEach((c) => {
+        if (c.id === id) {
+          const newC = { ...c, body };
+          newComment.push(newC);
+        } else {
+          newComment.push(c);
+        }
+      });
+      setData({
+        type: COMMENTS.DONE,
+        data: { comments: newComment },
+      });
+      setIsLoading(false);
+      setIsEdit(false);
+    }).catch(() => {
+      setIsLoading(false);
+      setErrorShow(true);
     });
-  } catch (err) {
-    return {
-      error: true,
-      message: err,
-    };
-  }
+  }, [id, body]);
+
+  return {
+    errorShow, isLoading, isEdit, setIsEdit,
+  };
 };
 
-export const deleteComment = async (id) => {
-  try {
-    return await axios({
+const DeleteComment = (id) => {
+  const [data, setData] = useContext(CommentsContext);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (id === 0) return;
+    setIsLoading(true);
+    axios({
       method: 'DELETE',
       url: `${API.COMMENTS}/${id}`,
-    });
-  } catch (err) {
-    return {
-      error: true,
-      message: err,
-    };
-  }
+    }).then(() => {
+      // res done
+      const newComment = data.comments.filter((c) => c.id !== id);
+      setData({
+        type: COMMENTS.DONE,
+        data: { comments: newComment },
+      });
+    }).catch(() => {});
+  }, [id]);
+
+  return isLoading;
 };
 
-export { GetCommentByPost };
+export {
+  GetCommentByPost,
+  DeleteComment,
+  UpdateComment,
+  AddComment,
+};
