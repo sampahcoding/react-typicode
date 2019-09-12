@@ -1,72 +1,53 @@
 import React, {
-  useState, useRef, useEffect, useCallback, useContext,
+  useState, useRef, useEffect,
 } from 'react';
 import PropTypes from 'prop-types';
 import {
   Modal, Button, Form, Alert,
 } from 'react-bootstrap';
-import { PostsContext } from '../context/PostsContext';
-import { addPost, updatePost } from '../api/PostApi';
-import { USERPOSTS } from '../const/ActionType';
+import { UpdatePost } from '../api/PostApi';
 
 const PostEditModal = ({ isShown, post }) => {
   const [show, setShow] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const title = useRef();
   const body = useRef();
   const skipInitialRender = useRef(true);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const [inputTitle, setInputTitle] = useState('');
+  const [inputBody, setInputBody] = useState('');
+  const [id, setId] = useState(0);
+  const { isLoading, done, error } = UpdatePost(id, inputTitle, inputBody, post.id ? 'edit' : 'add');
+  // blm di handle
   const [modalErrorShow, setModalErrorShow] = useState(false);
-  const [error, setError] = useState('');
-  const [data, setData] = useContext(PostsContext);
+
+  const add = () => {
+    setInputTitle(title.current.value);
+    setInputBody(body.current.value);
+    setId(post.id || 1);
+  };
+
   useEffect(() => {
     if (skipInitialRender.current) {
       skipInitialRender.current = false;
     } else {
       handleShow();
+      setModalErrorShow(false);
     }
   }, [isShown]);
 
-  const add = useCallback(async () => {
-    setIsLoading(true);
-    const inputTitle = title.current.value;
-    const inputBody = body.current.value;
-    if (inputTitle === '' || inputBody === '') {
-      setError('Input cannot be empty');
-      setModalErrorShow(true);
-      setIsLoading(false);
-      return;
-    }
-    setError('');
-    const res = post.id
-      ? await updatePost(post.id, inputTitle, inputBody) : await addPost(1, inputTitle, inputBody);
-    let newPosts = [];
-    if (!res.error) {
-      if (!post.id) {
-        res.data.id = 501 + (Math.random() * 4);
-        data.posts.unshift(res.data);
-        newPosts = data.posts.filter((c) => c.id !== -1);
-      } else {
-        data.posts.forEach((p) => {
-          if (p.id === post.id) {
-            const newP = { ...p, body: inputBody, title: inputTitle };
-            newPosts.push(newP);
-          } else {
-            newPosts.push(p);
-          }
-        });
-      }
-      setData({
-        type: USERPOSTS.DONE,
-        data: { posts: newPosts },
-      });
+  // close modal when done
+  useEffect(() => {
+    if (done) {
       handleClose();
-    } else {
-      setModalErrorShow(true);
+      setId(0);
     }
-    setIsLoading(false);
-  }, [data, post, setData]);
+  }, [done]);
+
+  // error
+  useEffect(() => {
+    if (error !== null) setModalErrorShow(true);
+  }, [error]);
 
   return (
     <>
@@ -80,7 +61,7 @@ const PostEditModal = ({ isShown, post }) => {
               <Alert variant="danger" onClose={() => setModalErrorShow(false)} dismissible>
                 <Alert.Heading>Something Wrong!</Alert.Heading>
                 <p>
-                  {error !== '' ? error : 'Cannot save data...'}
+                  {error}
                 </p>
               </Alert>
             )

@@ -1,31 +1,15 @@
-import React, {
-  useCallback, useContext, useState,
-} from 'react';
+import React, { useState } from 'react';
 import {
   Card, ListGroup, ButtonGroup,
   ButtonToolbar, Button,
 } from 'react-bootstrap';
 import PropTypes from 'prop-types';
-import { deletePost } from '../api/PostApi';
-import { USERPOSTS } from '../const/ActionType';
-import { PostsContext } from '../context/PostsContext';
+import { DeletePost } from '../api/PostApi';
 
 const PostItem = ({ post, edit }) => {
-  const [data, setData] = useContext(PostsContext);
-  const [isLoading, setIsLoading] = useState(false);
-  const remove = useCallback(async (removedId) => {
-    setIsLoading(true);
-    const res = await deletePost(removedId);
-    if (!res.error) {
-      const newPosts = data.posts.filter((p) => p.id !== removedId);
-      setData({
-        type: USERPOSTS.DONE,
-        data: { posts: newPosts },
-      });
-    } else {
-      setIsLoading(false);
-    }
-  }, [data, setData]);
+  const [removedId, setRemovedId] = useState(0);
+  const isLoading = DeletePost(removedId);
+
   return (
     <ListGroup.Item key={post.id} disabled={isLoading} variant={isLoading ? '' : 'light'}>
       <Card.Link href={`/post/${post.id}`}>{post.title}</Card.Link>
@@ -34,7 +18,7 @@ const PostItem = ({ post, edit }) => {
           <Button variant="primary" size="sm" onClick={() => edit(post)}>Edit</Button>
         </ButtonGroup>
         <ButtonGroup>
-          <Button variant="secondary" size="sm" onClick={() => remove(post.id)}>Delete</Button>
+          <Button variant="secondary" size="sm" onClick={() => setRemovedId(post.id)}>Delete</Button>
         </ButtonGroup>
       </ButtonToolbar>
     </ListGroup.Item>
